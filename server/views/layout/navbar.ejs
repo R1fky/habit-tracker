@@ -1,0 +1,57 @@
+<nav id="navbar" class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 transition-shadow duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700"> HabitTracker </a>
+      </div>
+
+      <!-- Desktop Links -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="/" class="text-gray-600 hover:text-blue-600 transition">Beranda</a>
+        <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition">Fitur</a>
+        <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition">Tentang</a>
+        <a href="/auth/login" class="text-blue-600 border border-blue-600 px-4 py-1 rounded hover:bg-blue-50 transition"> Login </a>
+        <a href="/auth/register" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"> Daftar </a>
+      </div>
+
+      <!-- Mobile button -->
+      <div class="flex items-center md:hidden">
+        <button id="mobile-menu-button" class="text-gray-600 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
+    <a href="/" class="block py-2 text-gray-600 hover:text-blue-600">Beranda</a>
+    <a href="#fitur" class="block py-2 text-gray-600 hover:text-blue-600">Fitur</a>
+    <a href="#tentang" class="block py-2 text-gray-600 hover:text-blue-600">Tentang</a>
+    <a href="/auth/login" class="block py-2 text-blue-600">Login</a>
+    <a href="/auth/register" class="block py-2 text-white bg-blue-600 rounded text-center">Daftar</a>
+  </div>
+</nav>
+
+<script>
+  // Mobile toggle
+  const menuBtn = document.getElementById("mobile-menu-button");
+  const menu = document.getElementById("mobile-menu");
+
+  menuBtn.addEventListener("click", () => {
+    menu.classList.toggle("hidden");
+  });
+
+  // Scroll effect: add stronger shadow when scrolling down
+  const navbar = document.getElementById("navbar");
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 10) {
+      navbar.classList.add("shadow-md");
+    } else {
+      navbar.classList.remove("shadow-md");
+    }
+  });
+</script>

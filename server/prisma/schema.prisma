@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  habits    Habit[]
+  createdAt DateTime @default(now())
+}
+
+model Habit {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+  logs        HabitLog[]
+  createdAt   DateTime   @default(now())
+}
+
+model HabitLog {
+  id        Int      @id @default(autoincrement())
+  habit     Habit    @relation(fields: [habitId], references: [id])
+  habitId   Int
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([habitId, date]) // hanya satu log per habit per hari
+}
