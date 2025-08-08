@@ -1,18 +1,124 @@
-<div class="min-h-screen flex items-center justify-center">
-  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
-    <form>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-        <input type="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" />
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="bg-white shadow-lg rounded-lg px-8 pt-10 pb-8 w-full max-w-md animate-fade-in">
+    <h1 class="text-3xl font-extrabold mb-8 text-center text-blue-600">Daftar Akun</h1>
+    <form id="registerUser">
+      <!-- Email -->
+      <div class="mb-5">
+        <label class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="border border-gray-300 rounded-lg w-full py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          placeholder="contoh@email.com"
+        />
       </div>
-      <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-        <input type="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" />
+
+      <!-- Password -->
+      <div class="mb-6 relative">
+        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          class="border border-gray-300 rounded-lg w-full py-2 px-3 text-gray-800 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          placeholder="••••••••"
+        />
+        <!-- Eye icon -->
+        <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center text-gray-500">
+          <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path id="eyePath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </button>
       </div>
-      <div class="flex items-center justify-between">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register</button>
-      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Daftar</button>
     </form>
+
+    <!-- Login Link -->
+    <p class="text-center text-sm text-gray-600 mt-6">
+      Sudah punya akun?
+      <a href="/auth/login" class="text-blue-600 hover:underline font-medium">Login di sini</a>
+    </p>
   </div>
 </div>
+
+<!-- Animasi Fade -->
+<style>
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<!-- Toggle Password -->
+<script>
+  const toggleBtn = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+  const eyeIcon = document.getElementById("eyeIcon");
+
+  toggleBtn.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type");
+    passwordInput.setAttribute("type", type === "password" ? "text" : "password");
+    // Ganti ikon (opsional, bisa diimprovisasi lebih lanjut)
+    eyeIcon.classList.toggle("text-blue-500");
+  });
+
+  document.getElementById("registerUser").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const dataRegis = {
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+    };
+
+    console.log(dataRegis);
+
+    try {
+      const response = await fetch("/auth/regis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataRegis),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        Swal.fire({
+          title: "Registrasi Berhasil!",
+          text: result.message || "Silakan login sekarang.",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          window.location.href = "/auth/login";
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal Registrasi",
+          text: result.message || "Terjadi kesalahan saat mendaftar.",
+          icon: "error",
+          confirmButtonText: "Coba Lagi",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error.message || "Server tidak merespon. Coba lagi nanti.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  });
+</script>
