@@ -1,5 +1,6 @@
 import * as authModel from "../model/authModel.js";
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -57,7 +58,6 @@ export const getLoginPage = (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
 
     const user = await prisma.user.findUnique({
       where: { email },
@@ -71,6 +71,8 @@ export const loginUser = async (req, res) => {
 
     const math = await bcrypt.compare(password, user.password);
 
+    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+
     if (!math) {
       return res.json({
         message: "Invalid Password",
@@ -79,6 +81,11 @@ export const loginUser = async (req, res) => {
     res.status(200).json({
       message: "Login Berhasil",
       success: true,
+      token,
+      user : {
+        id : user.id,
+        email : user.email,
+      }
     });
   } catch (error) {
     res.status(200).json({

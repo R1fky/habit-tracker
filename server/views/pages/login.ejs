@@ -162,13 +162,14 @@
         });
 
         const result = await response.json();
-        console.log(result)
         if (result.success) {
           Swal.fire({
             title: "Login Berhasil!",
             icon: "success",
             confirmButtonText: "OK",
           }).then(() => {
+            localStorage.setItem("token", result.token);
+            localStorage.setItem("user", JSON.stringify(result.user));
             window.location.href = "/habbit";
           });
         } else {

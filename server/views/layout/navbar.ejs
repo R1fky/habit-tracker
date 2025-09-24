@@ -1,19 +1,12 @@
 <nav id="navbar" class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 transition-shadow duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
+    <div class="flex justify-between h-16 items-center">
       <!-- Logo -->
-      <div class="flex items-center">
-        <a href="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700"> HabitTracker </a>
-      </div>
+      <a href="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700">HabitTracker</a>
 
       <!-- Desktop Links -->
-      <div class="hidden md:flex items-center space-x-6">
-        <a href="/" class="text-gray-600 hover:text-blue-600 transition">Beranda</a>
-        <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition">Fitur</a>
-        <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition">Tentang</a>
-        <a href="/habbit" class="text-gray-600 hover:text-blue-600 transition">Habbit</a>
-        <a href="/auth/loginPage" class="text-blue-600 border border-blue-600 px-4 py-1 rounded hover:bg-blue-50 transition"> Login </a>
-        <a href="/auth/register" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"> Daftar </a>
+      <div class="flex items-center space-x-6" id="navLinks">
+        <!-- isi dengan JS -->
       </div>
 
       <!-- Mobile button -->
@@ -29,11 +22,7 @@
 
   <!-- Mobile Menu -->
   <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
-    <a href="/" class="block py-2 text-gray-600 hover:text-blue-600">Beranda</a>
-    <a href="#fitur" class="block py-2 text-gray-600 hover:text-blue-600">Fitur</a>
-    <a href="#tentang" class="block py-2 text-gray-600 hover:text-blue-600">Tentang</a>
-    <a href="/auth/login" class="block py-2 text-blue-600">Login</a>
-    <a href="/auth/register" class="block py-2 text-white bg-blue-600 rounded text-center">Daftar</a>
+    <!-- isi dengan JS -->
   </div>
 </nav>
 
@@ -41,12 +30,11 @@
   // Mobile toggle
   const menuBtn = document.getElementById("mobile-menu-button");
   const menu = document.getElementById("mobile-menu");
-
   menuBtn.addEventListener("click", () => {
     menu.classList.toggle("hidden");
   });
 
-  // Scroll effect: add stronger shadow when scrolling down
+  // Scroll effect
   const navbar = document.getElementById("navbar");
   window.addEventListener("scroll", () => {
     if (window.scrollY > 10) {
@@ -55,4 +43,69 @@
       navbar.classList.remove("shadow-md");
     }
   });
+
+  // Render Navbar berdasarkan login
+  function renderNavbar() {
+    const token = localStorage.getItem("token");
+    const userRaw = localStorage.getItem("user");
+    const user = userRaw ? JSON.parse(userRaw) : null;
+
+    const navLinks = document.getElementById("navLinks");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    if (token && user) {
+      // User sudah login
+      navLinks.innerHTML = `
+        <a href="/" class="text-gray-600 hover:text-blue-600 transition">Beranda</a>
+        <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition">Fitur</a>
+        <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition">Tentang</a>
+        <a href="/habbit" class="text-gray-600 hover:text-blue-600 transition">Habbit</a>
+        <span class="text-gray-700 font-medium">Hi, ${user.email}</span>
+        <button onclick="logout()" 
+          class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition">
+          Logout
+        </button>
+      `;
+
+      mobileMenu.innerHTML = `
+        <a href="/" class="block py-2 text-gray-600 hover:text-blue-600">Beranda</a>
+        <a href="#fitur" class="block py-2 text-gray-600 hover:text-blue-600">Fitur</a>
+        <a href="#tentang" class="block py-2 text-gray-600 hover:text-blue-600">Tentang</a>
+        <a href="/habbit" class="block py-2 text-gray-600 hover:text-blue-600">Habbit</a>
+        <span class="block py-2 text-gray-700 font-medium">Hi, ${user.email}</span>
+        <button onclick="logout()" 
+          class="block w-full py-2 bg-red-500 text-white rounded mt-2 hover:bg-red-600">
+          Logout
+        </button>
+      `;
+    } else {
+      // Belum login
+      navLinks.innerHTML = `
+        <a href="/" class="text-gray-600 hover:text-blue-600 transition">Beranda</a>
+        <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition">Fitur</a>
+        <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition">Tentang</a>
+        <a href="/habbit" class="text-gray-600 hover:text-blue-600 transition">Habbit</a>
+        <a href="/auth/loginPage" class="text-blue-600 border border-blue-600 px-4 py-1 rounded hover:bg-blue-50 transition">Login</a>
+        <a href="/auth/register" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition">Daftar</a>
+      `;
+
+      mobileMenu.innerHTML = `
+        <a href="/" class="block py-2 text-gray-600 hover:text-blue-600">Beranda</a>
+        <a href="#fitur" class="block py-2 text-gray-600 hover:text-blue-600">Fitur</a>
+        <a href="#tentang" class="block py-2 text-gray-600 hover:text-blue-600">Tentang</a>
+        <a href="/auth/loginPage" class="block py-2 text-blue-600">Login</a>
+        <a href="/auth/register" class="block py-2 text-white bg-blue-600 rounded text-center">Daftar</a>
+      `;
+    }
+  }
+
+  // Logout
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/auth/loginPage";
+  }
+
+  // Render saat DOM siap
+  document.addEventListener("DOMContentLoaded", renderNavbar);
 </script>
