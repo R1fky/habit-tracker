@@ -9,7 +9,10 @@ import expressEjsLayouts from "express-ejs-layouts";
 //auth Router
 import authRoutes from "./routes/authRoute.js";
 //landing Page Router
-import landingRouter from './routes/landingRoute.js'
+import landingRouter from "./routes/landingRoute.js";
+//Habbit Route 
+import habitRouter from "./routes/habbitRoute.js";
+
 dotenv.config();
 const app = express();
 // Path Fixing
@@ -30,8 +33,8 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
-app.use('/', landingRouter)
+app.use("/", landingRouter);
 app.use("/auth", authRoutes);
+app.use("/habbit", habitRouter);
 
 export default app;

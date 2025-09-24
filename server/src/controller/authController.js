@@ -1,7 +1,6 @@
 import * as authModel from "../model/authModel.js";
-import bcrypt, { compare } from "bcrypt";
-import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -23,6 +22,16 @@ export const getregisterUser = async (req, res) => {
 export const registerUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      res.json({
+        message: "pengguna seudah terdaftar",
+      });
+    }
+
     await authModel.regis(email, password);
     res.status(201).json({
       message: "Register Anda Berhasil",
@@ -38,22 +47,18 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// proses login
-
-function generateToken(user) {
-  return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-}
-
 export const getLoginPage = (req, res) => {
   res.render("pages/login", {
-    layout: "layout/main",
     title: "Silahkan Login",
+    layout: "layout/main",
   });
 };
 
-export const getLogin = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email, password);
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -64,21 +69,22 @@ export const getLogin = async (req, res) => {
       });
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const math = await bcrypt.compare(password, user.password);
 
-    if (!match) {
+    if (!math) {
       return res.json({
-        message: "Password Invalid",
+        message: "Invalid Password",
       });
     }
-
-    const token = generateToken();
-    res.json({
-      token,
+    res.status(200).json({
+      message: "Login Berhasil",
+      success: true,
     });
   } catch (error) {
-    return res.json({
-      message: "Server Error",
+    res.status(200).json({
+      message: "Login Berhasil",
+      success: false,
     });
+    console.log("ERROR : ", error);
   }
 };
