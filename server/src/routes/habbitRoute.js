@@ -12,5 +12,8 @@ router.get("/", (req, res) => {
 });
 
 router.post("/create", authMiddleware.authenticateJWT, habbitController.createHabbit);
+router.get("/list", authMiddleware.authenticateJWT, habbitController.listHabits);
+//penanda selesai atau belum
+router.post("/mark-done", authMiddleware.authenticateJWT, habbitController.markHabitDone);
 
 export default router;

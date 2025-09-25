@@ -29,3 +29,59 @@ export const createHabbit = async (req, res) => {
     });
   }
 };
+
+export const listHabits = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.json({
+        message: "User Not Found",
+      });
+    }
+    const habits = await prisma.habit.findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    res.json({
+      success: true,
+      habits,
+    });
+  } catch (error) {
+    console.log("Error :", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi Kesalahan Pada Server",
+    });
+  }
+};
+
+//mark habit done/not done
+export const markHabitDone = async (req, res) => {
+  try {
+    const { habitId } = req.body;
+    const userId = req.user?.userId;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // reset waktu
+
+    //cek apakah habit milik user
+    const habit = await prisma.habit.findUnique({
+      where: { id: habitId },
+    });
+    if (!habit || habit.userId !== userId) {
+      res.status(400).json({
+        success: false,
+        message: "Habit tidak ditemukan",
+      });
+    }
+
+    //cek log hari ini 
+    const existingLog = await prisma.habitLog
+
+  } catch (error) {
+    console.error("Errornya disini : ", error);
+  }
+};
