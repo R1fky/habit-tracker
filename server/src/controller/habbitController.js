@@ -33,6 +33,9 @@ export const createHabbit = async (req, res) => {
 export const listHabits = async (req, res) => {
   try {
     const userId = req.user?.userId;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     if (!userId) {
       res.json({
         message: "User Not Found",
@@ -42,13 +45,25 @@ export const listHabits = async (req, res) => {
       where: {
         userId: userId,
       },
+      include: {
+        logs: {
+          where: { date: today },
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    const formatted = habits.map((habit) => ({
+      id: habit.id,
+      title: habit.title,
+      description: habit.description,
+      isDone: habit.logs.length > 0, // ✅ cek apakah sudah ada log untuk hari ini
+    }));
     res.json({
       success: true,
-      habits,
+      habits: formatted,
     });
   } catch (error) {
     console.log("Error :", error);
@@ -67,21 +82,46 @@ export const markHabitDone = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // reset waktu
 
-    //cek apakah habit milik user
+    // cek apakah habit milik user
     const habit = await prisma.habit.findUnique({
       where: { id: habitId },
     });
     if (!habit || habit.userId !== userId) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "Habit tidak ditemukan",
       });
     }
 
-    //cek log hari ini 
-    const existingLog = await prisma.habitLog
+    // cek log hari ini
+    const existingLog = await prisma.habitLog.findUnique({
+      where: { habitId_date: { habitId, date: today } },
+    });
 
+    if (existingLog) {
+      // kalau sudah ada → hapus (jadi belum selesai)
+      await prisma.habitLog.delete({ where: { id: existingLog.id } });
+      return res.json({
+        success: true,
+        done: false,
+        message: "Habit ditandai belum selesai",
+      });
+    } else {
+      // kalau belum ada → buat baru (jadi selesai)
+      await prisma.habitLog.create({
+        data: { habitId, date: today },
+      });
+      return res.json({
+        success: true,
+        done: true,
+        message: "Habit ditandai selesai",
+      });
+    }
   } catch (error) {
     console.error("Errornya disini : ", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan server",
+    });
   }
 };
