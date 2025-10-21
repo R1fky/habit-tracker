@@ -16,4 +16,8 @@ router.get("/list", authMiddleware.authenticateJWT, habbitController.listHabits)
 //penanda selesai atau belum
 router.post("/mark-done", authMiddleware.authenticateJWT, habbitController.markHabitDone);
 
+//statistik habit 
+router.get("/stats", authMiddleware.authenticateJWT, habbitController.getStats);
+
+
 export default router;

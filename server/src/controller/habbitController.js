@@ -125,3 +125,70 @@ export const markHabitDone = async (req, res) => {
     });
   }
 };
+
+
+// status habit 
+export const getStats = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "User tidak ditemukan" });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Total habit user
+    const totalHabits = await prisma.habit.count({ where: { userId } });
+
+    // Total habits selesai hari ini
+    const completedToday = await prisma.habitLog.count({
+      where: {
+        habit: { userId },
+        date: today,
+      },
+    });
+
+    // Ambil semua habit + log untuk hitung streak
+    const habits = await prisma.habit.findMany({
+      where: { userId },
+      include: { logs: { orderBy: { date: "desc" } } },
+    });
+
+    let longestStreak = 0;
+    for (let habit of habits) {
+      let streak = 0;
+      let currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      for (let log of habit.logs) {
+        const logDate = new Date(log.date);
+        logDate.setHours(0, 0, 0, 0);
+
+        if (logDate.getTime() === currentDate.getTime()) {
+          streak++;
+          currentDate.setDate(currentDate.getDate() - 1);
+        } else {
+          break; // streak terputus
+        }
+      }
+      longestStreak = Math.max(longestStreak, streak);
+    }
+
+    res.json({
+      success: true,
+      stats: {
+        totalHabits,
+        completedToday,
+        longestStreak,
+        progressPercent: totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0,
+      },
+    });
+  } catch (error) {
+    console.error("Error getStats:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan server",
+    });
+  }
+};

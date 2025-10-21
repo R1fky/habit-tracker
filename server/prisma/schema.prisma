@@ -9,11 +9,14 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
+  googleId  String?  @unique
+  name      String?
   email     String   @unique
-  password  String
+  password  String?  // optional jika ada auth lokal
   habits    Habit[]
   createdAt DateTime @default(now())
 }
+
 
 model Habit {
   id          Int        @id @default(autoincrement())
