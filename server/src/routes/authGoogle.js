@@ -11,7 +11,6 @@ const router = express.Router();
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
 
 //callback Google
-
 router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login", session: false }), (req, res) => {
   // Jika sampai sini, req.user berisi user yang ditemukan/dibuat
   const user = req.user;

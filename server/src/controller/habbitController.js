@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+import { sendDailyReminders } from "../controller/reminderController.js";
+
 export const createHabbit = async (req, res) => {
   const { habbitInput, habitDescription } = req.body;
   const userId = req.user?.userId;
@@ -126,8 +128,7 @@ export const markHabitDone = async (req, res) => {
   }
 };
 
-
-// status habit 
+// status habit
 export const getStats = async (req, res) => {
   try {
     const userId = req.user?.userId;
@@ -190,5 +191,15 @@ export const getStats = async (req, res) => {
       success: false,
       message: "Terjadi kesalahan server",
     });
+  }
+};
+
+export const sendDailyReminderController = async (req, res) => {
+  try {
+    await sendDailyReminders();
+    res.json({ success: true, message: "Reminder terkirim" });
+  } catch (error) {
+    console.error("Error kirim reminder:", error);
+    res.status(500).json({ success: false, message: "Gagal mengirim reminder" });
   }
 };

@@ -190,3 +190,29 @@ async function loadStats() {
 document.addEventListener("DOMContentLoaded", () => {
   loadStats();
 });
+
+document.getElementById("sendReminderBtn").addEventListener("click", async () => {
+  const statusEl = document.getElementById("reminderStatus");
+  statusEl.innerText = "Mengirim reminder...";
+
+  try {
+    const response = await fetch("/habbit/send-reminder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      statusEl.innerText = "✅ Reminder terkirim!";
+    } else {
+      statusEl.innerText = "❌ Gagal mengirim reminder: " + result.message;
+    }
+  } catch (err) {
+    console.error(err);
+    statusEl.innerText = "❌ Terjadi kesalahan saat mengirim reminder";
+  }
+});
