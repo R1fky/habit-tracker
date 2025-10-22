@@ -7,6 +7,7 @@ import expressEjsLayouts from "express-ejs-layouts";
 
 import passport from "./config/passport-google-jwt.js";
 import authGoogleRoutes from "./routes/authGoogle.js";
+// import cookieParser from "cookie-parser";
 import cookieParser from "cookie-parser";
 
 //auth Router
@@ -37,6 +38,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+// app.use(cookieParser());
 // Passport init (tanpa session)
 app.use(passport.initialize());
 
@@ -44,10 +46,11 @@ app.use("/", landingRouter);
 app.use("/auth", authRoutes);
 app.use("/habbit", habitRouter);
 app.use("/authGoogle", authGoogleRoutes);
+
 // contoh protected route
-import { authenticateJWT } from "./middleware/authMiddleware.js";
-app.get("/protected", authenticateJWT, (req, res) => {
-  res.json({ success: true, message: "Akses berhasil", user: req.user });
-});
+// import { authenticateJWT } from "./middleware/authMiddleware.js";
+// app.get("/protected", authenticateJWT, (req, res) => {
+//   res.json({ success: true, message: "Akses berhasil", user: req.user });
+// });
 
 export default app;

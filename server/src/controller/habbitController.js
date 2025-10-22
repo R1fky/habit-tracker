@@ -77,7 +77,7 @@ export const listHabits = async (req, res) => {
 };
 
 //mark habit done/not done
-export const markHabitDone = async (req, res) => {
+export const markHabitDone = async (req, res) => {cl
   try {
     const { habitId } = req.body;
     const userId = req.user?.userId;

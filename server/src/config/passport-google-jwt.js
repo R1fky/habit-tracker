@@ -11,13 +11,14 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
+      callbackURL: "http://localhost:5000/authGoogle/google/callback",
     },
 
     // verify callback
     async (accessToken, refreshToken, profile, done) => {
+      console.log("PROFILE:", profile);
       try {
-        const email = profile.emails && profile.email[0] && profile.emails[0].value;
+        const email = profile.emails && profile.emails[0] && profile.emails[0].value;
         const googleId = profile.id;
         const name = profile.displayName || null;
 
@@ -33,7 +34,7 @@ passport.use(
 
         // buat user baru
         if (!user) {
-          user = await prisma.user.crete({
+          user = await prisma.user.create({
             data: {
               googleId,
               name,
@@ -51,8 +52,8 @@ passport.use(
 
         return done(null, user);
       } catch (error) {
-        console.error("Passport Google error:", err);
-        return done(err, null);
+        console.error("Passport Google error:", error);
+        return done(error, null);
       }
       // Ambil email (beberapa akun google tidak share email, pastikan scope email diminta)
     }
