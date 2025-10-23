@@ -19,7 +19,7 @@ export const authenticateJWT = (req, res, next) => {
   }
 
   if (!token) {
-    console.warn("❌ Token tidak ditemukan");
+    console.warn("❌Dari Middleware Token tidak ditemukan");
     return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
   }
 

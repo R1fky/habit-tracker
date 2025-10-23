@@ -15,7 +15,8 @@ router.get("/google/callback", passport.authenticate("google", { failureRedirect
   // Jika sampai sini, req.user berisi user yang ditemukan/dibuat
   const user = req.user;
   // payload JWT  (sesuai claim)
-
+  console.log("✅ User dari Google Callback:", user);
+  
   const payload = {
     userId: user.id,
     email: user.email,

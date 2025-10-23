@@ -16,6 +16,7 @@ import authRoutes from "./routes/authRoute.js";
 import landingRouter from "./routes/landingRoute.js";
 //Habbit Route
 import habitRouter from "./routes/habbitRoute.js";
+import userRoute from "./routes/userRoute.js";
 
 dotenv.config();
 const app = express();
@@ -46,6 +47,7 @@ app.use("/", landingRouter);
 app.use("/auth", authRoutes);
 app.use("/habbit", habitRouter);
 app.use("/authGoogle", authGoogleRoutes);
+app.use("/user", userRoute);
 
 // contoh protected route
 // import { authenticateJWT } from "./middleware/authMiddleware.js";

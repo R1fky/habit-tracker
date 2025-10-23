@@ -41,10 +41,14 @@ passport.use(
               email,
             },
           });
-        } else if (!user.googleId) {
-          await prisma.user.update({
+        } else {
+          // Update googleId dan name jika belum ada
+          user = await prisma.user.update({
             where: { id: user.id },
-            data: { googleId },
+            data: {
+              googleId: user.googleId || googleId,
+              name: user.name || name,
+            },
           });
         }
 
