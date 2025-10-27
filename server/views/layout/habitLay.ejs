@@ -1,0 +1,43 @@
+<!-- habitPage.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+   
+  </head>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r shadow-sm flex flex-col">
+      <div class="p-6 border-b">
+        <h1 class="text-2xl font-bold text-blue-700">Habit Tracker</h1>
+        <p class="text-sm text-gray-500">Notion-style Dashboard</p>
+      </div>
+
+      <nav class="flex-1 p-4 space-y-2">
+        <a href="#" class="flex items-center p-2 rounded-lg text-blue-600 bg-blue-50 font-medium">📅 Dashboard</a>
+        <a href="#" class="flex items-center p-2 rounded-lg text-gray-700 hover:bg-gray-100">🗓️ Kalender Progress</a>
+        <a href="#" class="flex items-center p-2 rounded-lg text-gray-700 hover:bg-gray-100">📊 Statistik</a>
+        <a href="#" class="flex items-center p-2 rounded-lg text-gray-700 hover:bg-gray-100">🔔 Reminder</a>
+      </nav>
+
+      <div class="border-t p-4">
+        <button onclick="logout()" class="w-full text-left text-red-600 hover:text-red-700 font-medium">🚪 Logout</button>
+        <!-- <form action="/auth/logout" method="GET">
+        </form> -->
+      </div>
+    </aside>
+
+    <!-- Konten utama -->
+    <%- body %>
+    <script>
+      function logout() {
+        fetch("/authGoogle/logout").then(() => {
+        window.location.href = "/";
+      });
+  }
+    </script>
+  </body>
+</html>

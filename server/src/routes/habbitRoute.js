@@ -5,13 +5,14 @@ import * as authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", authMiddleware.authenticateJWT, (req, res) => {
-  res.render("habbitPage", {
+  res.render("dashboardHabit", {
     title: "Habbit User",
-    layout: "layout/main",
+    layout: 'layout/habitLay'
+
   });
 });
 
-router.post("/create", authMiddleware.authenticateJWT, habbitController.createHabbit);
+router.post("/add", authMiddleware.authenticateJWT, habbitController.createHabbit);
 router.get("/list", authMiddleware.authenticateJWT, habbitController.listHabits);
 //penanda selesai atau belum
 router.post("/mark-done", authMiddleware.authenticateJWT, habbitController.markHabitDone);

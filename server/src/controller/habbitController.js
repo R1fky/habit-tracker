@@ -4,30 +4,34 @@ const prisma = new PrismaClient();
 import { sendDailyReminders } from "../controller/reminderController.js";
 
 export const createHabbit = async (req, res) => {
-  const { habbitInput, habitDescription } = req.body;
-  const userId = req.user?.userId;
-  if (!userId) {
-    return res.status(401).json({ message: "User tidak ditemukan", success: false });
-  }
-
   try {
-    const habit = await prisma.habit.create({
+    const userId = req.user?.userId; // pastikan ambil userId dengan benar
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "User tidak ditemukan (unauthorized)",
+      });
+    }
+
+    const { title, icon, } = req.body;
+
+    const newHabit = await prisma.habit.create({
       data: {
-        title: habbitInput,
-        description: habitDescription,
-        user: { connect: { id: userId } },
+        title,
+        userId,
       },
     });
 
     res.json({
-      message: "Habbit berhasil ditambahkan",
       success: true,
-      habit,
+      message: "Habit berhasil ditambahkan",
+      habit: newHabit,
     });
   } catch (error) {
-    res.json({
-      message: `Gagal Menambahkan Habbit ${error}`,
+    console.error("Error createHabbit:", error);
+    res.status(500).json({
       success: false,
+      message: "Terjadi kesalahan di server",
     });
   }
 };
@@ -77,7 +81,7 @@ export const listHabits = async (req, res) => {
 };
 
 //mark habit done/not done
-export const markHabitDone = async (req, res) => {cl
+export const markHabitDone = async (req, res) => {
   try {
     const { habitId } = req.body;
     const userId = req.user?.userId;

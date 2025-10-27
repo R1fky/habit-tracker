@@ -1,0 +1,119 @@
+<main class="flex-1 p-8 overflow-y-auto bg-gray-50">
+  <!-- Ringkasan Cepat -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-blue-100 p-4 rounded-lg text-center shadow">
+      <p class="text-gray-600 text-sm">Habit Aktif</p>
+      <h3 class="text-2xl font-bold text-blue-700">6</h3>
+    </div>
+    <div class="bg-green-100 p-4 rounded-lg text-center shadow">
+      <p class="text-gray-600 text-sm">Selesai Hari Ini</p>
+      <h3 class="text-2xl font-bold text-green-700">3</h3>
+    </div>
+    <div class="bg-yellow-100 p-4 rounded-lg text-center shadow">
+      <p class="text-gray-600 text-sm">Progres</p>
+      <h3 class="text-2xl font-bold text-yellow-700">50%</h3>
+    </div>
+    <div class="bg-purple-100 p-4 rounded-lg text-center shadow">
+      <p class="text-gray-600 text-sm">Streak Terpanjang</p>
+      <h3 class="text-2xl font-bold text-purple-700">10🔥</h3>
+    </div>
+  </section>
+
+  <!-- Habit Hari Ini -->
+  <section class="bg-white rounded-lg shadow p-6 mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Kebiasaan Hari Ini</h2>
+      <button id="btnAddHabit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">➕ Tambah Habit</button>
+    </div>
+
+    <div class="space-y-3" id="habitList">
+      <div class="flex justify-between items-center border-b pb-2">
+        <span>🏃‍♂️ Olahraga Pagi</span>
+        <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">Selesai</button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-2">
+        <span>📖 Baca Buku 30 Menit</span>
+        <button class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400 transition">Belum</button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-2">
+        <span>💧 Minum 8 Gelas Air</span>
+        <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">Selesai</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grafik Mingguan -->
+  <section class="bg-white rounded-lg shadow p-6 mb-8">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Progres Mingguan</h2>
+    <canvas id="weeklyChart" height="100"></canvas>
+  </section>
+
+  <!-- Riwayat Terakhir -->
+  <section class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Riwayat Terakhir</h2>
+    <ul class="space-y-2 text-gray-700">
+      <li>✅ Olahraga Pagi – Hari ini, 07:10</li>
+      <li>✅ Meditasi – Kemarin, 21:00</li>
+      <li>❌ Tidur Tepat Waktu – 2 hari lalu</li>
+    </ul>
+  </section>
+
+  <!-- ✅ Modal Tambah Habit -->
+  <div id="modalAddHabit" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Tambah Kebiasaan Baru</h3>
+
+      <form id="formAddHabit" class="space-y-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Nama Kebiasaan</label>
+          <input type="text" id="habitTitle" name="title" class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300" placeholder="Contoh: Olahraga Pagi" required />
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Ikon (opsional)</label>
+          <input type="text" id="habitIcon" name="icon" class="w-full border rounded-lg p-2" placeholder="Contoh: 🏃‍♂️" />
+        </div>
+
+        <div class="flex justify-end space-x-2">
+          <button type="button" id="btnCloseModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Batal</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Simpan</button>
+        </div>
+      </form>
+
+      <!-- Tombol close pojok kanan atas -->
+      <button id="btnCloseX" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl">✕</button>
+    </div>
+  </div>
+  <!-- end modal tambah habit  -->
+  <!-- Grafik JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/habit.js"></script>
+  <script>
+    // document.addEventListener("DOMContentLoaded", () => {
+    //   const ctx = document.getElementById("weeklyChart");
+    //   new Chart(ctx, {
+    //     type: "bar",
+    //     data: {
+    //       labels: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
+    //       datasets: [
+    //         {
+    //           label: "Habit Selesai",
+    //           data: [3, 4, 2, 5, 3, 6, 4],
+    //           borderWidth: 1,
+    //           backgroundColor: "rgba(37, 99, 235, 0.6)",
+    //           borderRadius: 6,
+    //         },
+    //       ],
+    //     },
+    //     options: {
+    //       scales: {
+    //         y: { beginAtZero: true, max: 10 },
+    //       },
+    //       plugins: {
+    //         legend: { display: false },
+    //       },
+    //     },
+    //   });
+    // });
+  </script>
+</main>

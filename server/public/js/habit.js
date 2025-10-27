@@ -5,62 +5,97 @@ async function getHabits() {
     const response = await fetch("/habbit/list", {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
     const result = await response.json();
+    const habitList = document.getElementById("habitList");
 
-    const habitList = document.getElementById("habitsList");
-    const emptyState = document.getElementById("emptyState");
-
-    habitList.innerHTML = "";
-
-    if (result.success && result.habits.length > 0) {
-      emptyState.style.display = "none";
-
-      result.habits.forEach((habit) => {
-        const card = document.createElement("div");
-        card.className = "p-5 bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition-all flex flex-col justify-between";
-
-        // buat elemen status
-        const statusSpan = document.createElement("span");
-        statusSpan.textContent = habit.isDone ? "Selesai" : "Belum";
-        statusSpan.className = habit.isDone ? "px-3 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded-full" : "px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-semibold rounded-full";
-
-        // tombol toggle
-        const toggleBtn = document.createElement("button");
-        toggleBtn.textContent = habit.isDone ? "Batalkan" : "Tandai Selesai";
-        toggleBtn.className = "px-3 py-1 text-white rounded-lg transition-all duration-200 font-medium shadow-md " + (habit.isDone ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600");
-
-        toggleBtn.onclick = () => toggleHabitDone(habit.id, statusSpan, toggleBtn);
-
-        card.innerHTML = `
-          <div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-1">${habit.title}</h3>
-            <p class="text-gray-500 text-sm">${habit.description || "Tidak ada deskripsi"}</p>
-          </div>
-        `;
-
-        const footer = document.createElement("div");
-        footer.className = "mt-4 flex justify-between items-center";
-
-        footer.appendChild(statusSpan);
-        footer.appendChild(toggleBtn);
-
-        card.appendChild(footer);
-        habitList.appendChild(card);
-      });
-    } else {
-      emptyState.style.display = "block";
+    habitList.innerHTML = ""; //hapus kotent lama paa html
+    const habits = result.habits || result;
+    // Pastikan result berisi array habit
+    if (!Array.isArray(habits) || habits.length === 0) {
+      habitList.innerHTML = `<p class="text-gray-500 italic">Belum ada kebiasaan hari ini.</p>`;
+      return;
     }
+
+    // // Loop dan tambahkan elemen baru
+    habits.forEach((habit) => {
+      const div = document.createElement("div");
+      div.className = "flex justify-between items-center border-b pb-2";
+
+      // status button style
+      const isDone = habit.isDone || habit.status === "done";
+      const btnClass = isDone ? "bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" : "bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400 transition";
+      const btnText = isDone ? "Selesai" : "Belum";
+
+      div.innerHTML = `
+        <span>${habit.icon || "✅"} ${habit.title}</span>
+        <button class="${btnClass}" data-id="${habit.id}">${btnText}</button>
+      `;
+
+      // Tambahkan event toggle ke button
+      const btn = div.querySelector("button");
+      btn.addEventListener("click", () => toggleHabit(habit.id, btn));
+
+      habitList.appendChild(div);
+    });
   } catch (error) {
-    console.error("Fetch error :", error);
+    console.log("error Mesage :", error);
   }
 }
 document.addEventListener("DOMContentLoaded", getHabits);
 
-async function toggleHabitDone(habitId, statusSpan, toggleBtn) {
+// --- Modal Handling ---
+const modal = document.getElementById("modalAddHabit");
+const btnAddHabit = document.getElementById("btnAddHabit");
+const btnCloseModal = document.getElementById("btnCloseModal");
+const btnCloseX = document.getElementById("btnCloseX");
+const formAddHabit = document.getElementById("formAddHabit");
+
+btnAddHabit.addEventListener("click", () => {
+  modal.classList.remove("hidden");
+});
+
+[btnCloseModal, btnCloseX].forEach((btn) => btn.addEventListener("click", () => modal.classList.add("hidden")));
+
+// --- Submit Habit Baru ---
+formAddHabit.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const title = document.getElementById("habitTitle").value.trim();
+  const icon = document.getElementById("habitIcon").value.trim();
+
+  if (!title) return alert("Nama kebiasaan wajib diisi!");
+
+  try {
+    const response = await fetch("/habbit/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ title, icon }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert("Habit berhasil ditambahkan!");
+      modal.classList.add("hidden");
+      formAddHabit.reset();
+      getHabits(); // refresh daftar habit
+    } else {
+      alert(result.message || "Gagal menambah habit");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Terjadi kesalahan saat menambah habit");
+  }
+});
+
+async function toggleHabit(habitId, statusSpan, toggleBtn) {
   try {
     const response = await fetch("/habbit/mark-done", {
       method: "POST",
