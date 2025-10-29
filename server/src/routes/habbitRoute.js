@@ -22,5 +22,7 @@ router.get("/stats", authMiddleware.authenticateJWT, habbitController.getStats);
 
 // test reminder Habit
 router.post("/send-reminder", authMiddleware.authenticateJWT, habbitController.sendDailyReminderController);
+//progress mingguan
+router.get('/weekly-progress', authMiddleware.authenticateJWT, habbitController.getWeeklyProgress)
 
 export default router;

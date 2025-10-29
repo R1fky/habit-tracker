@@ -1,12 +1,11 @@
 <!-- habitPage.ejs -->
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-   
-  </head>
+    <link href="/css/style.css" rel="stylesheet" />
   </head>
   <body class="bg-gray-50 min-h-screen flex">
     <!-- Sidebar -->
@@ -35,9 +34,9 @@
     <script>
       function logout() {
         fetch("/authGoogle/logout").then(() => {
-        window.location.href = "/";
-      });
-  }
+          window.location.href = "/";
+        });
+      }
     </script>
   </body>
 </html>

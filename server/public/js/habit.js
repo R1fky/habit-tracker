@@ -9,7 +9,6 @@ async function getHabits() {
         Authorization: `Bearer ${token}`,
       },
     });
-
     const result = await response.json();
     const habitList = document.getElementById("habitList");
 
@@ -131,100 +130,35 @@ async function toggleHabit(habitId, statusSpan, toggleBtn) {
   }
 }
 
-async function addHabit() {
-  const habbitData = {
-    habbitInput: document.getElementById("habitInput").value.trim(),
-    habitDescription: document.getElementById("habitDescription").value.trim(),
-  };
+// async function loadStats() {
+//   try {
+//     const response = await fetch("/habbit/stats", {
+//       method: "GET",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
 
-  try {
-    const response = await fetch("/habbit/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(habbitData),
-    });
+//     const result = await response.json();
+//     if (result.success) {
+//       document.getElementById("completedToday").innerText = result.stats.completedToday;
+//       document.getElementById("totalHabits").innerText = result.stats.totalHabits;
+//       document.getElementById("longestStreak").innerText = result.stats.longestStreak;
 
-    const result = await response.json();
-
-    if (result.success) {
-      Swal.fire({
-        title: "Habit Berhasil Ditambahkan",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then(() => {
-        const habitList = document.getElementById("habitsList");
-        const emptyState = document.getElementById("emptyState");
-        if (emptyState) emptyState.style.display = "none";
-
-        const card = document.createElement("div");
-        card.className = "p-4 bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition-all flex flex-col justify-between";
-
-        card.innerHTML = `
-    <div>
-      <h3 class="text-xl font-semibold text-gray-800 mb-2">${result.habit.title}</h3>
-      <p class="text-gray-500 text-sm">${result.habit.description || "Tidak ada deskripsi"}</p>
-    </div>
-    <div class="mt-4 flex justify-end">
-      <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Baru</span>
-    </div>
-  `;
-
-        habitList.appendChild(card);
-
-        // kosongkan form input
-        document.getElementById("habitInput").value = "";
-        document.getElementById("habitDescription").value = "";
-      });
-    } else {
-      Swal.fire({
-        title: "Habit Gagal Ditambahkan",
-        text: result.message || "Coba lagi nanti",
-        icon: "error",
-        confirmButtonText: "Coba Lagi",
-      });
-    }
-  } catch (error) {
-    console.error("Fetch error:", error);
-    Swal.fire({
-      title: "Terjadi Kesalahan",
-      text: error.message,
-      icon: "error",
-    });
-  }
-}
-
-async function loadStats() {
-  try {
-    const response = await fetch("/habbit/stats", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const result = await response.json();
-    if (result.success) {
-      document.getElementById("completedToday").innerText = result.stats.completedToday;
-      document.getElementById("totalHabits").innerText = result.stats.totalHabits;
-      document.getElementById("longestStreak").innerText = result.stats.longestStreak;
-
-      // update progress bar
-      const progress = result.stats.progressPercent;
-      const bar = document.getElementById("progressBar");
-      bar.style.width = progress + "%";
-      bar.innerText = progress + "%";
-    }
-  } catch (error) {
-    console.error("Gagal load stats:", error);
-  }
-}
+//       // update progress bar
+//       const progress = result.stats.progressPercent;
+//       const bar = document.getElementById("progressBar");
+//       bar.style.width = progress + "%";
+//       bar.innerText = progress + "%";
+//     }
+//   } catch (error) {
+//     console.error("Gagal load stats:", error);
+//   }
+// }
 // Panggil saat halaman dimuat
-document.addEventListener("DOMContentLoaded", () => {
-  loadStats();
-});
+// document.addEventListener("DOMContentLoaded", () => {
+//   loadStats();
+// });
 
 document.getElementById("sendReminderBtn").addEventListener("click", async () => {
   const statusEl = document.getElementById("reminderStatus");
@@ -250,4 +184,25 @@ document.getElementById("sendReminderBtn").addEventListener("click", async () =>
     console.error(err);
     statusEl.innerText = "❌ Terjadi kesalahan saat mengirim reminder";
   }
+});
+
+//progres Mingguan
+async function loadWeeklyProgress() {
+  try {
+    console.log("Fungsi ini di panggil");
+    // const response = await fetch("/habbit/weekly-progress", {
+    //   headers: { Authorization: `Bearer ${token}` },
+    // });
+
+    // const result = await response.json();
+    // console.log("data logs dari back-end", result);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+// document.addEventListener("DOMContentLoaded", loadWeeklyProgress());
+// Panggil saat halaman dimuat
+document.addEventListener("DOMContentLoaded", () => {
+  loadWeeklyProgress();
 });

@@ -13,7 +13,7 @@ export const createHabbit = async (req, res) => {
       });
     }
 
-    const { title, icon, } = req.body;
+    const { title, icon } = req.body;
 
     const newHabit = await prisma.habit.create({
       data: {
@@ -205,5 +205,61 @@ export const sendDailyReminderController = async (req, res) => {
   } catch (error) {
     console.error("Error kirim reminder:", error);
     res.status(500).json({ success: false, message: "Gagal mengirim reminder" });
+  }
+};
+
+// progres mingguan
+export const getWeeklyProgress = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+
+    //ambil 7 hari kebelakang dimulai dari start
+    const end = new Date(); //ambil tanggal hari
+    const start = new Date();
+    start.setDate(end.getDate() - 6);
+
+    //ambil semua habit user login lognya 7 hari terakhir
+    //gte = greater than or equal → tanggal lebih besar atau sama dengan start.
+    //lte = less than or equal → tanggal lebih kecil atau sama dengan end.
+    const habits = await prisma.habit.findMany({
+      where: { userId },
+      include: {
+        logs: {
+          where: {
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+      },
+    });
+
+    const data = habits.map((habit) => {
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(start); //log pada start berisi 7 hari sebelumnya
+        d.setDate(start.getDate() + i);
+
+        //membuat log true jika ada yang sama dengan tanggal log pada database
+        const isDone = habit.logs.some((log) => new Date(log.date).toDateString() === d.toDateString());
+
+        days.push({
+          date: d.toDateString().split("T")[0],
+          done: isDone, //
+        });
+      }
+
+      return {
+        id: habit.id,
+        title: habit.title,
+        progress: days,
+      };
+    });
+
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error("Error getWeeklyProgress:", error);
+    res.status(500).json({ success: false, message: "Gagal mengambil progress mingguan" });
   }
 };
